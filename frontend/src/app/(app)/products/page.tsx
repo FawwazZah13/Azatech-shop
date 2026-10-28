@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Pagination } from "@/components/pagination";
 import { formatRupiah } from "@/lib/format";
-import { useProducts, type ProductSort } from "@/lib/products";
+import { useDeleteProduct, useProducts, type ProductSort } from "@/lib/products";
+import type { Product } from "@/lib/types";
 import { useDebounce } from "@/lib/use-debounce";
 
 const PER_PAGE = 10;
@@ -14,9 +16,11 @@ export default function ProductsPage() {
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
   const [sort, setSort] = useState<ProductSort>("name");
+  const [toDelete, setToDelete] = useState<Product | null>(null);
   const search = useDebounce(searchInput, 400);
 
   const products = useProducts({ page, perPage: PER_PAGE, search, sort });
+  const remove = useDeleteProduct();
   const items = products.data?.data ?? [];
   const meta = products.data?.meta;
 
@@ -30,6 +34,39 @@ export default function ProductsPage() {
     if (sort === `-${key}`) return " ↓";
     return "";
   }
+
+  function closeDialog() {
+    setToDelete(null);
+    remove.reset();
+  }
+
+  function confirmDelete() {
+    if (!toDelete) return;
+    remove.mutate(toDelete.id, {
+      onSuccess: () => {
+        // Kalau yang dihapus adalah satu-satunya item di halaman ini, mundur satu halaman
+        if (items.length === 1 && page > 1) setPage(page - 1);
+        closeDialog();
+      },
+    });
+  }
+
+  const actionButtons = (p: Product) => (
+    <div className="flex gap-2">
+      <Link
+        href={`/products/${p.id}/edit`}
+        className="rounded border border-gray-300 px-3 py-1 text-xs text-gray-700 hover:bg-gray-50"
+      >
+        Edit
+      </Link>
+      <button
+        onClick={() => setToDelete(p)}
+        className="rounded border border-red-200 px-3 py-1 text-xs text-red-600 hover:bg-red-50"
+      >
+        Hapus
+      </button>
+    </div>
+  );
 
   return (
     <div>
@@ -95,6 +132,7 @@ export default function ProductsPage() {
                         Harga{sortMark("price")}
                       </button>
                     </th>
+                    <th className="px-4 py-3 text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -110,6 +148,9 @@ export default function ProductsPage() {
                         {p.stock}
                       </td>
                       <td className="px-4 py-3 text-right text-gray-900">{formatRupiah(p.price)}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex justify-end">{actionButtons(p)}</div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -128,6 +169,7 @@ export default function ProductsPage() {
                     </span>
                     <span className="text-gray-900">{formatRupiah(p.price)}</span>
                   </div>
+                  <div className="mt-3">{actionButtons(p)}</div>
                 </li>
               ))}
             </ul>
@@ -136,6 +178,16 @@ export default function ProductsPage() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={toDelete !== null}
+        title="Hapus produk?"
+        message={`Produk "${toDelete?.product_name ?? ""}" akan dihapus dari daftar. Riwayat order yang memuat produk ini tetap utuh.`}
+        isPending={remove.isPending}
+        error={remove.error ? remove.error.message : null}
+        onConfirm={confirmDelete}
+        onCancel={closeDialog}
+      />
     </div>
   );
 }

@@ -1,4 +1,9 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import type { Product } from "@/lib/types";
 
@@ -9,6 +14,13 @@ type ProductListParams = {
   perPage: number;
   search: string;
   sort: ProductSort;
+};
+
+export type ProductInput = {
+  product_code?: string;
+  product_name: string;
+  stock: number;
+  price: number;
 };
 
 export function useProducts(params: ProductListParams) {
@@ -24,5 +36,41 @@ export function useProducts(params: ProductListParams) {
         },
       }),
     placeholderData: keepPreviousData,
+  });
+}
+
+export function useProduct(id: string) {
+  return useQuery({
+    queryKey: ["product", id],
+    queryFn: () => api<Product>(`/products/${id}`),
+  });
+}
+
+export function useCreateProduct() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: ProductInput) =>
+      api<Product>("/products", { method: "POST", body: input }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["products"] }),
+  });
+}
+
+export function useUpdateProduct(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: ProductInput) =>
+      api<Product>(`/products/${id}`, { method: "PUT", body: input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product", id] });
+    },
+  });
+}
+
+export function useDeleteProduct() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => api<null>(`/products/${id}`, { method: "DELETE" }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["products"] }),
   });
 }
