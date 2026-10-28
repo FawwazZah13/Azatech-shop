@@ -40,3 +40,20 @@ export type Order = {
   created_by?: { id: number; name: string };
   items?: OrderItem[];
 };
+
+export type DashboardSummary = {
+  total_orders: number;
+  total_sales: string;
+  top_products: {
+    id: number;
+    product_code: string;
+    product_name: string;
+    total_sold: number;
+  }[];
+  low_stock_products: {
+    id: number;
+    product_code: string;
+    product_name: string;
+    stock: number;
+  }[];
+};
