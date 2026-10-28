@@ -20,3 +20,23 @@ export type Customer = {
   created_at: string;
   updated_at: string;
 };
+
+export type OrderItem = {
+  id: number;
+  product_id: number;
+  product_code: string | null;
+  product_name: string | null;
+  quantity: number;
+  unit_price: string;
+  subtotal: string;
+};
+
+export type Order = {
+  id: number;
+  order_number: string;
+  order_date: string;
+  total_amount: string;
+  customer?: { id: string; customer_name: string };
+  created_by?: { id: number; name: string };
+  items?: OrderItem[];
+};
