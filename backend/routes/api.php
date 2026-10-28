@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -14,4 +15,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('products', ProductController::class);
     Route::apiResource('customers',CustomerController::class);
+    Route::apiResource('orders', OrderController::class)->only(['index', 'show', 'store']);
 });
