@@ -9,6 +9,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Services\ProductService;
 use App\Support\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -64,9 +65,9 @@ class ProductController extends Controller
         return ApiResponse::success(new ProductResource($product));
     }
 
-    public function store(StoreProductRequest $request): JsonResponse
+    public function store(StoreProductRequest $request, ProductService $product): JsonResponse
     {
-        $product = Product::create($request->validated());
+        $product = $product->create($request->validated());
 
         return ApiResponse::success(new ProductResource($product), 'Produk berhasil dibuat', 201);
     }
