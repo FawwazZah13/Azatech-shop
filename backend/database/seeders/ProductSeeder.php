@@ -36,7 +36,7 @@ class ProductSeeder extends Seeder
 
         foreach ($products as $i => [$name, $price]) {
             Product::updateOrCreate(
-                ['product_code' => 'P' . str_pad((string) ($i + 1), 4, '0', STR_PAD_LEFT)],
+                ['product_code' => 'P'.str_pad((string) ($i + 1), 4, '0', STR_PAD_LEFT)],
                 [
                     'product_name' => $name,
                     'price' => $price,

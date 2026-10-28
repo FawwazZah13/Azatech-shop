@@ -5,7 +5,6 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('auth/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
@@ -15,7 +14,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me']);
 
     Route::apiResource('products', ProductController::class);
-    Route::apiResource('customers',CustomerController::class);
+    Route::apiResource('customers', CustomerController::class);
     Route::apiResource('orders', OrderController::class)->only(['index', 'show', 'store']);
     Route::get('dashboard/summary', [DashboardController::class, 'summary']);
 });

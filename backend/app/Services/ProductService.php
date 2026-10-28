@@ -37,6 +37,6 @@ class ProductService
 
         $next = $last ? ((int) substr($last, 1)) + 1 : 1;
 
-        return 'P' . str_pad((string) $next, 4, '0', STR_PAD_LEFT);
+        return 'P'.str_pad((string) $next, 4, '0', STR_PAD_LEFT);
     }
 }

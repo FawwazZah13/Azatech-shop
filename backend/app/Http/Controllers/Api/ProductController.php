@@ -38,7 +38,7 @@ class ProductController extends Controller
 
         $paginator = Product::query()
             ->when($request->filled('search'), function ($q) use ($request) {
-                $term = '%' . $request->input('search') . '%';
+                $term = '%'.$request->input('search').'%';
                 $q->where(fn ($w) => $w
                     ->where('product_name', 'ilike', $term)
                     ->orWhere('product_code', 'ilike', $term));

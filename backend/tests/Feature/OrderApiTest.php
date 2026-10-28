@@ -6,7 +6,6 @@ use App\Models\Customer;
 use App\Models\Product;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
-use App\Exceptions\OrderFailedException;
 
 beforeEach(function () {
     $this->user = User::factory()->create();

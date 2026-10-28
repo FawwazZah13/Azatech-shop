@@ -85,16 +85,16 @@ class OrderService
 
     private function generateOrderNumber(CarbonInterface $date): string
     {
-        $prefix = 'INV-' . $date->format('Ymd') . '-';
+        $prefix = 'INV-'.$date->format('Ymd').'-';
 
         // Kunci per hari agar dua request bersamaan tidak dapat nomor sama
         if (DB::getDriverName() === 'pgsql') {
             DB::select('select pg_advisory_xact_lock(?)', [crc32($prefix)]);
         }
 
-        $last = Order::where('order_number', 'like', $prefix . '%')->max('order_number');
+        $last = Order::where('order_number', 'like', $prefix.'%')->max('order_number');
         $next = $last ? ((int) substr($last, -4)) + 1 : 1;
 
-        return $prefix . str_pad((string) $next, 4, '0', STR_PAD_LEFT);
+        return $prefix.str_pad((string) $next, 4, '0', STR_PAD_LEFT);
     }
 }

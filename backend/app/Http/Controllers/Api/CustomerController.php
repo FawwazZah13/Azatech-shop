@@ -25,7 +25,7 @@ class CustomerController extends Controller
 
         $paginator = Customer::query()
             ->when($request->filled('search'), fn ($q) => $q->where(
-                'customer_name', 'ilike', '%' . $request->input('search') . '%'
+                'customer_name', 'ilike', '%'.$request->input('search').'%'
             ))
             ->orderBy('customer_name')
             ->orderBy('id')
